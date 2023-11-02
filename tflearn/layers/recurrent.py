@@ -14,7 +14,7 @@ except:
     from tensorflow.python.ops.rnn import rnn_cell_impl as _rnn_cell, dynamic_rnn as _drnn
     from tensorflow.contrib.rnn.python.ops import core_rnn_cell
 
-from tensorflow.python.util.nest import is_sequence
+from tensorflow.python.util.nest import is_sequence_or_composite
 
 from .. import config
 from .. import utils
@@ -531,11 +531,11 @@ class BasicLSTMCell(core_rnn_cell.RNNCell):
                 j = batch_normalization(j, gamma=0.1, trainable=self.trainable, restore=self.restore, reuse=self.reuse)
                 f = batch_normalization(f, gamma=0.1, trainable=self.trainable, restore=self.restore, reuse=self.reuse)
                 o = batch_normalization(o, gamma=0.1, trainable=self.trainable, restore=self.restore, reuse=self.reuse)
-            
+
             new_c = (c * self._inner_activation(f + self._forget_bias) +
                      self._inner_activation(i) *
                      self._activation(j))
-            
+
             # hidden-to-hidden batch normalizaiton
             if self.batch_norm == True:
                 batch_norm_new_c = batch_normalization(new_c, gamma=0.1, trainable=self.trainable, restore=self.restore, reuse=self.reuse)
@@ -713,9 +713,9 @@ def _linear(args, output_size, bias, bias_start=0.0, weights_init=None,
     Raises:
         ValueError: if some of the arguments has unspecified or wrong shape.
     """
-    if args is None or (is_sequence(args) and not args):
+    if args is None or (is_sequence_or_composite(args) and not args):
         raise ValueError("`args` must be specified")
-    if not is_sequence(args):
+    if not is_sequence_or_composite(args):
         args = [args]
 
     # Calculate the total size of arguments on dimension 1.
